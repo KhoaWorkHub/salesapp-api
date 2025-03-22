@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.salesapp.api.dto.request.LoginRequest;
 import com.salesapp.api.dto.request.SignupRequest;
+import com.salesapp.api.dto.request.LogoutRequest;
 import com.salesapp.api.dto.response.JwtResponse;
 import com.salesapp.api.dto.response.MessageResponse;
 import com.salesapp.api.entity.User;
 import com.salesapp.api.repository.UserRepository;
 import com.salesapp.api.security.jwt.JwtUtils;
+import com.salesapp.api.security.services.TokenBlacklistService;
 import com.salesapp.api.security.services.UserDetailsImpl;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -39,6 +41,9 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -84,5 +89,17 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(@Valid @RequestBody LogoutRequest logoutRequest) {
+        try {
+            // Blacklist the token
+            tokenBlacklistService.blacklistToken(logoutRequest.getToken());
+
+            return ResponseEntity.ok(new MessageResponse("User logged out successfully!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: " + e.getMessage()));
+        }
     }
 }
