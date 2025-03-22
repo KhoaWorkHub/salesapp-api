@@ -13,21 +13,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      # Add SQL Server service container
-      sqlserver:
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        env:
-          ACCEPT_EULA: Y
-          SA_PASSWORD: 123
-        ports:
-          - 1433:1433
-        options: >-
-          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 123 -Q 'SELECT 1' || exit 1"
-          --health-interval 10s
-          --health-timeout 3s
-          --health-retries 10
-
     steps:
       - name: 🛠 Checkout source code
         uses: actions/checkout@v4
@@ -41,9 +26,18 @@ jobs:
       - name: 🏗️ Grant execute permission to Gradle wrapper
         run: chmod +x gradlew
 
-      - name: 📦 Create database
+      - name: 🐳 Start SQL Server container
         run: |
-          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 123 -Q "CREATE DATABASE [SalesAppDB-Dev]"
+          docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=123" -e "MSSQL_PID=Developer" \
+                    -p 1433:1433 --name sql-server -d \
+                    mcr.microsoft.com/mssql/server:2019-latest
+          
+          # Wait for SQL Server to start
+          sleep 20s
+          
+          # Create the database
+          docker exec sql-server /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 123 \
+                 -Q "CREATE DATABASE [SalesAppDB-Dev]"
 
       - name: 📦 Build with Gradle
         run: ./gradlew build
