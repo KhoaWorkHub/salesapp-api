@@ -13,6 +13,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      # Add SQL Server service container
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: 123
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 123 -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 10
+
     steps:
       - name: 🛠 Checkout source code
         uses: actions/checkout@v4
@@ -25,6 +40,10 @@ jobs:
 
       - name: 🏗️ Grant execute permission to Gradle wrapper
         run: chmod +x gradlew
+
+      - name: 📦 Create database
+        run: |
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 123 -Q "CREATE DATABASE [SalesAppDB-Dev]"
 
       - name: 📦 Build with Gradle
         run: ./gradlew build
