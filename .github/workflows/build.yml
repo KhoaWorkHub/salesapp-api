@@ -23,8 +23,11 @@ jobs:
           distribution: 'corretto'
           java-version: '17'
 
-      - name: 📦 Build với Maven
-        run: mvn clean install
+      - name: 🏗️ Grant execute permission to Gradle wrapper
+        run: chmod +x gradlew
 
-      - name: 🧪 Chạy test
-        run: mvn test
+      - name: 📦 Build with Gradle
+        run: ./gradlew build
+
+      - name: 🧪 Run tests
+        run: ./gradlew test
