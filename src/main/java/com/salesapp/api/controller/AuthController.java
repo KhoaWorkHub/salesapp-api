@@ -84,7 +84,7 @@ public class AuthController {
         user.setPasswordHash(encoder.encode(signUpRequest.getPassword()));
         user.setPhoneNumber(signUpRequest.getPhoneNumber());
         user.setAddress(signUpRequest.getAddress());
-        user.setRole("ROLE_USER");
+        user.setRole("USER");
 
         userRepository.save(user);
 
