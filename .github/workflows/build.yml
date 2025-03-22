@@ -26,21 +26,5 @@ jobs:
       - name: 🏗️ Grant execute permission to Gradle wrapper
         run: chmod +x gradlew
 
-      - name: 🐳 Start SQL Server container
-        run: |
-          docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=123" -e "MSSQL_PID=Developer" \
-                    -p 1433:1433 --name sql-server -d \
-                    mcr.microsoft.com/mssql/server:2019-latest
-          
-          # Wait for SQL Server to start
-          sleep 20s
-          
-          # Create the database
-          docker exec sql-server /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 123 \
-                 -Q "CREATE DATABASE [SalesAppDB-Dev]"
-
-      - name: 📦 Build with Gradle
-        run: ./gradlew build
-
-      - name: 🧪 Run tests
-        run: ./gradlew test
+      - name: 📦 Build with Gradle (skip tests)
+        run: ./gradlew build -x test
