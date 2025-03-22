@@ -1,0 +1,30 @@
+name: Build and Test Spring Boot App
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛠 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: 📦 Build với Maven
+        run: mvn clean install
+
+      - name: 🧪 Chạy test
+        run: mvn test

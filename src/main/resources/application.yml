@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: salesapp-api
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=SalesAppDB-Dev;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: 123
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+        format_sql: true
+    show-sql: true
+
+app:
+  jwt:
+    secret: 4db39aed535cc907bf69513b5de0c3550923fa90561f77335fc219d1ddfac22edd4c9f00a1d33c86a62f0ff5a4b06d06642116b926525769ac372ecf9ed776a1408471538a3c420e5b2869020d61c92bbc84604fb7bc4412b2d4236ac14a9e0f9213d05aafff231c71ad907f7c571e86b908f4ebd7abb9f75c3dfa2c082810bb4d3c56fb351b86f43cc389b93f4b91641b479e5be73cdeae386f222676bba1f0d3c947ade9c98589494405930a6ce741bcad467b3164dae0882334018cbe58bdd56a8f64091bae3b0d1b6dfb4d9605c9b191442fd0b967a65fc2fee1ef4025c716aaf9c9aed0d52261bc6334af7582943b40678a087c5526634b63f800083788f88c9648f892e0f2728105e4b13f83cf31913cb6e18d60626bd04294a08fd705f1eb4ec26547f0ae0d9a466c29431a628a1612d6f075402784a5326d0a020586a7dea26655e7f9ed9e72e2687e7c6b613c6fa84d23134f3e775edad18f1553ca0dd5a96ade48c399d60538a24f6129175cce2a8c5fce44c06408812ba5180f4d68acb04e05fb6381688bb699f11604ad9ad92024597788b53dd0c7a75385a615352ac282bd42d3ef3f577626ccd6272e348e3699dc6b6f2b942047b583ad46fc28e13fcc393f2345966433bc500ab0a1c0d3db2544b6a48b9d9099137de3dd7a1f947a72b932836f831d4d522f6ba59b9e9482fa8a0f51400efdb0109acfe7fb
+    expirationMs: 86400000
+
+server:
+  port: 8080
