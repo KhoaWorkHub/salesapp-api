@@ -62,6 +62,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                                 .requestMatchers("/api/store-locations/**").permitAll()
+                                // The following line makes all cart APIs protected and accessible only to authenticated users
+                                .requestMatchers("/api/cart/**").authenticated()
                                 .anyRequest().authenticated()
                 );
 

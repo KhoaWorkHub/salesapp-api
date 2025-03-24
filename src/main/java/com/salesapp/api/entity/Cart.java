@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,14 +23,35 @@ public class Cart {
     private User user;
 
     @Column(nullable = false)
-    private BigDecimal totalPrice;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @Column(nullable = false, length = 50)
-    private String status;
+    private String status = "ACTIVE"; // ACTIVE, COMPLETED, ABANDONED
 
-//    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
-//    private List<CartItem> cartItems;
-//
-//    @OneToOne(mappedBy = "cart")
-//    private Order order;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> cartItems = new ArrayList<>();
+
+    // Helper methods to manage cart items
+    public void addCartItem(CartItem cartItem) {
+        cartItems.add(cartItem);
+        cartItem.setCart(this);
+        recalculateTotalPrice();
+    }
+
+    public void removeCartItem(CartItem cartItem) {
+        cartItems.remove(cartItem);
+        cartItem.setCart(null);
+        recalculateTotalPrice();
+    }
+
+    public void clearCart() {
+        cartItems.clear();
+        totalPrice = BigDecimal.ZERO;
+    }
+
+    public void recalculateTotalPrice() {
+        totalPrice = cartItems.stream()
+                .map(CartItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
